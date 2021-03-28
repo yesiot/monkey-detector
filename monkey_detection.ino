@@ -48,6 +48,9 @@ static uint8_t tensor_arena[kTensorArenaSize];
 
 // The name of this function is important for Arduino compatibility.
 void setup() {
+
+  Serial.begin(115200);
+  
   // Set up logging. Google style is to avoid globals or statics because of
   // lifetime uncertainty, but since this has a trivial destructor it's okay.
   // NOLINTNEXTLINE(runtime-global-variables)
@@ -104,6 +107,11 @@ void loop() {
                             input->data.int8)) {
     TF_LITE_REPORT_ERROR(error_reporter, "Image capture failed.");
   }
+
+  // Send the image over the serial port so we can see the image with image2screen
+  Serial.write("XXSYNCXX");
+  Serial.write(reinterpret_cast<uint8_t*>(input->data.int8), kNumCols * kNumRows);
+
 
   // Run the model on this input and make sure it succeeds.
   if (kTfLiteOk != interpreter->Invoke()) {

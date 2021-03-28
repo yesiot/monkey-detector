@@ -12,8 +12,6 @@ uint8_t buffer[cImageWidth * cImageHeigth];
 void InitCamera(tflite::ErrorReporter* error_reporter) {
   TF_LITE_REPORT_ERROR(error_reporter, "Attempting to start Arducam");
 
-  Serial.begin(115200);
-  
   // Init the cam QVGA, 30FPS
   cam.begin(CAMERA_R320x240, 30);
 }
@@ -28,7 +26,6 @@ TfLiteStatus GetImage(tflite::ErrorReporter* error_reporter, int image_width,
   }
 
   cam.grab(buffer);
-  Serial.write("XXSYNCXX");
   
   auto xOffset = (cImageWidth - image_width) / 2;
   auto yOffset = (cImageHeigth - image_height) / 2;
@@ -38,8 +35,6 @@ TfLiteStatus GetImage(tflite::ErrorReporter* error_reporter, int image_width,
       image_data[(i * image_width) + j] = buffer[((i + yOffset) * cImageWidth) + (xOffset + j)];
     }
   }
-    
-  Serial.write(reinterpret_cast<uint8_t*>(image_data), image_width * image_height);
 
   return kTfLiteOk;
 }
